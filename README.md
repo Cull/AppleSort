@@ -35,3 +35,20 @@ For apple classification run:
 
 avg fps: 0.03s,
 AP = (0.8*2 + 0.85 + 0.91 + 0.91 + 0.83 + 0.82 + 0.79*4) / 11 = 0.825
+
+#bash commands
+
+#learn hog + svm model:
+./hogpcasvmlearn.py --train_data apple_data/ --result_path svmModel.joblib --meta_file_path apple_meta.txt --pca_result_path pcaModel.joblib
+
+#detect hog svm model 
+./hogpcasvmdetect.py --test_data AppleTest/Apple/ --model_path svmModel.joblib --pca_model_path pcaModel.joblib --detection_result_file hog+pca+svm_res.txt 
+
+#detect yolo model
+./yolodetect.py --images_dir AppleTest/Apple/ --model_path detectAppleYolo.h5 --class apple_1class.txt --result_file yolo_res.txt
+
+#validate hog+svm model
+./validate.py --ground_truth_file ground_truth.txt --test_result_file hog+pca+svm_res.txt
+
+#validate yolo model
+./validate.py --ground_truth_file ground_truth.txt --test_result_file yolo_res.txt
