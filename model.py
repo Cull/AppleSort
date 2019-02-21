@@ -521,6 +521,8 @@ class YOLO(object):
 
 		class_names = []
 
+		detectedRects = []
+
 		for i, c in reversed(list(enumerate(out_classes))):
 			predicted_class = self.class_names[c]
 			box = out_boxes[i]
@@ -532,12 +534,16 @@ class YOLO(object):
 			draw = ImageDraw.Draw(image)
 			label_size = draw.textsize(label, font)
 
+			if (score < 0.5):
+				continue
+
 			top, left, bottom, right = box
 			top = max(0, np.floor(top + 0.5).astype('int32'))
 			left = max(0, np.floor(left + 0.5).astype('int32'))
 			bottom = min(image.size[1], np.floor(bottom + 0.5).astype('int32'))
 			right = min(image.size[0], np.floor(right + 0.5).astype('int32'))
 			print(label, (left, top), (right, bottom))
+			detectedRects.append([left, top, right, bottom, 0])
 
 			if top - label_size[1] >= 0:
 				text_origin = np.array([left, top - label_size[1]])
@@ -552,7 +558,7 @@ class YOLO(object):
 
 		end = timer()
 		print("time consumed: " + str(end - start))
-		return image, class_names
+		return image, class_names, detectedRects
 
 	def close_session(self):
 		self.sess.close()
